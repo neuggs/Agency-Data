@@ -1,0 +1,16 @@
+---
+title: "Prepare Data"
+author: "Frank Neugebauer"
+date: "9/10/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preparing Agency Data
+
+The agency data has been prepared and profiled. With this assumption, the data itself is mostly categorical and still contains at least one feature that is not useful (i.e., `master_company`). Each remaining feature must be carefully considered for deletion, transformation, or simply to remain as-is.
+
+agency_data_orig <- read

@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1568147306001.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2544180543",
+    "id" : "5E55D7E2",
+    "lastKnownWriteTime" : 1568148213,
+    "last_content_update" : 1568148213279,
+    "path" : "~/GitHub/agency_data/naive_bayes_model.rmd",
+    "project_path" : "naive_bayes_model.rmd",
+    "properties" : {
+        "cursorPosition" : "79,30",
+        "scrollLine" : "71",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
