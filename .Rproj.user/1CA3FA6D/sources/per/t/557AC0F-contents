@@ -13,6 +13,10 @@ agency_data_orig <- read.xlsx('./data/AgencyData_clean.xlsx', sheetIndex=1, stri
 agency_data_used <- agency_data_orig[c(-1, -4)]
 str(agency_data_used)
 
+# Bin the effective dates
+# Four bins for each quarter, all years fit into one of the four.
+#bins <- rbin_manual(agency_data_used, effective_date, c())
+
 # Setup train and test data, 70% / 30%
 train_ad <- sample_frac(agency_data_used, 0.7)
 sid <- as.numeric(rownames(train_ad)) # because rownames() returns character
@@ -32,12 +36,15 @@ nb_model$tables$policy_type
 nb_model$tables$rating_state
 nb_model$tables$status
 
+foo <- agency_data_used[agency_data_used$annual_premium > 10000]
+summary(agency_data_used$written_premium)
+
 nb_predict <- predict(nb_model, test_ad)
 
 # Show predictions per field
 table(nb_predict, test_ad$account_type)
 table(nb_predict, test_ad$assigned_agent)
-table(nb_predict, test_ad$log)
+table(nb_predict, test_ad$lob)
 table(nb_predict, test_ad$master_company)
 #table(nb_predict, test_ad$effective_date) # bin this
 table(nb_predict, test_ad$policy_term)
