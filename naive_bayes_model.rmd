@@ -3,8 +3,8 @@ title: "Naive Bayes Agency Data Predictive Model"
 author: "Frank Neugebauer"
 date: "9/14/2019"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,6 +13,7 @@ library(xlsx)
 library(dplyr)
 library(e1071)
 library(caret)
+library(formattable)
 ```
 
 # Agency Data Simple Naive Bayes Predictive Model
@@ -123,16 +124,17 @@ confusion_matrix <- table(nb_predict, test_ad$transaction_type)
 ```{r echo=FALSE}
 con_matrix <- confusionMatrix(confusion_matrix)
 con_matrix
-accuracy <- con_matrix[["overall"]][["Accuracy"]]
-lower_ci <- con_matrix[["overall"]][["AccuracyLower"]]
-upper_ci <- con_matrix[["overall"]][["AccuracyUpper"]]
+accuracy <- percent(con_matrix[["overall"]][["Accuracy"]])
+lower_ci <- percent(con_matrix[["overall"]][["AccuracyLower"]])
+upper_ci <- percent(con_matrix[["overall"]][["AccuracyUpper"]])
 ```
 
+## Results Interpretation - MORE TO DO HERE I THINK
 The predictive quality for agency data shows promise. Some very specific points about the results:
 
 1. A `r accuracy` accuracy for `transaction_type` is very good. 
 
-2. There's a 95% chance that the accuracy is between 88% and 93% - also very good.
+2. There's a 95% chance that the accuracy is between `r lower_ci` and `r upper_ci` - also very good.
 
-3. The accuracy is greater than the No Information Rate, which indicates significance.
+3. The accuracy is greater than the No Information Rate, which indicates significance. (Not always, but the upper CI is.)
 

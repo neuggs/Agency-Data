@@ -2,6 +2,7 @@ library(xlsx)
 library(dplyr)
 library(e1071)
 library(caret)
+library(formattable)
 
 # Let's try Naive Bayes as-is with the important variables. This is admittedly a lazy
 # attempt just to see what happens since Naive Bayes can handle categorical data.
@@ -58,4 +59,4 @@ con_matrix <- confusionMatrix(confusion_matrix)
 
 overall <- con_matrix[3]
 accuracy <- overall[["overall"]][["Accuracy"]]
-print(accuracy)
+print(percent(accuracy))
