@@ -56,6 +56,4 @@ confusion_matrix <- table(nb_predict, test_ad$transaction_type)
 #plot(confusion_matrix)
 con_matrix <- confusionMatrix(confusion_matrix)
 
-overall <- con_matrix[3]
-accuracy <- overall[["overall"]][["Accuracy"]]
-print(accuracy)
+typeof(con_matrix)

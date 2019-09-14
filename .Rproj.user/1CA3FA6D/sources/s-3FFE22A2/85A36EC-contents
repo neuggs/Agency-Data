@@ -1,7 +1,7 @@
 ---
 title: "Naive Bayes Agency Data Predictive Model"
 author: "Frank Neugebauer"
-date: "9/10/2019"
+date: "9/14/2019"
 output:
   word_document: default
   pdf_document: default
@@ -19,10 +19,11 @@ library(caret)
 
 Agency data intuitively has value to an agency and potentially to agent's carrier partner(s). One way to gain value from that data - which exists within agency management systems - is to create one or more predictive models. Gaining insight from predictive modeling using agency data is the fundamental nature of this effort.
 
-** Prologue **
+**Epilogue**
 It's clear that predictive modelling with agency has value. The contents of this analysis are a single perspective of such an effort, although subsequently, at least one other perspective is presented to give the reader a glimpse into how varied this analysis could potentially be.
 
-This uses a largely unalered simple Naive Bayes model to set a baseline for subsequent predictive models, which can be created using other algorithms.
+This uses a largely unaltered simple Naive Bayes model to set a baseline for subsequent predictive models, which can be created using other algorithms.
+
 
 ```{r}
 # Read the original data set
@@ -32,6 +33,7 @@ agency_data_orig <- read.xlsx('./data/AgencyData_clean.xlsx', sheetIndex=1, stri
 ## Data Setup
 
 There are a couple of irrelevant attributes from the original set. Get rid of those and then setup the `train` and `test` data sets.
+
 
 ```{r}
 # Trim the phat - i.e., data that's irrelevant
@@ -50,6 +52,7 @@ This step is set aside because with a big data set, it would be slow or put into
 
 For example, can the model predict the likelihood of a renewal for a personal auto policy (it can go deeper than that, but it's a good illustration of the principle).
 
+
 ```{r}
 nb_model <- naiveBayes(transaction_type~., data=train_ad)
 ```
@@ -59,10 +62,6 @@ nb_model <- naiveBayes(transaction_type~., data=train_ad)
 The model creates the conditional probabilities based on the training data. This output shows those, which is interesting unto itself.
 
 Intuitively, it may appear that this is simple math - e.g., if there were 100 transactions and 40 of them were renewals, then the probability should be 40%. However, this model is multi-factored, which means a more accurate way of considering it is, given the line of business was personal auto, there's some non-obvious probability that a renwal will occur. That's the kind of probabilities being reported here.
-
-```{r echo=FALSE}
-nb_model$tables$account_type
-```
 
 ```{r}
 nb_model$tables$assigned_agent
@@ -75,6 +74,15 @@ nb_model$tables$policy_type
 nb_model$tables$rating_state
 nb_model$tables$status
 ```
+
+Some important points about the conditional probabilities:
+
+1. The conditional probabilities by `assigned_agent` and transaction can help in workforce capacity planning. For example, if some agents are handling renewals more frequently, perhaps those agents need help.
+
+2. `master_company` data can be used similarly to how `assigned_agent` is used in order to ensure companies with the most valuable business, or most frequently number of transactions, have the greatest amount of help.
+
+3. For `policy_term` there is something unexpected: virtually all `New Business` transactions are 12 month, whereas renewals are 76%/24% 12 to 6 month. Why?
+
  
 ## Make Predictions
 
@@ -86,7 +94,9 @@ nb_predict <- predict(nb_model, test_ad)
 
 ## Show the Predictions
 
-This is similar to the conditional probability, but applies it to show the actual predicted values.
+This is similar to the conditional probability, but applies it to show the actual predicted values. The points about conditional probabilities all apply for the predictions, but this is where number of transactions are shown. As such, this is a more valuable workforce capacity planning metric.
+
+**However**, the numbers shown here are based on the size of the test set. If you want to actually simulate workforce capacity, you'll need a sample that is similar to what you'll expect in a year (a model like this one can be used to make that prediction).
 
 ```{r}
 table(nb_predict, test_ad$account_type)
@@ -106,12 +116,23 @@ Build a simple confusion matrix and then plot it.
 
 ```{r}
 confusion_matrix <- table(nb_predict, test_ad$transaction_type)
-plot(confusion_matrix)
 ```
 
 ## Finally, Show Stats on the Confusion Matrix
 
-```{r}
-confusionMatrix(confusion_matrix)
+```{r echo=FALSE}
+con_matrix <- confusionMatrix(confusion_matrix)
+con_matrix
+accuracy <- con_matrix[["overall"]][["Accuracy"]]
+lower_ci <- con_matrix[["overall"]][["AccuracyLower"]]
+upper_ci <- con_matrix[["overall"]][["AccuracyUpper"]]
 ```
+
+The predictive quality for agency data shows promise. Some very specific points about the results:
+
+1. A `r accuracy` accuracy for `transaction_type` is very good. 
+
+2. There's a 95% chance that the accuracy is between 88% and 93% - also very good.
+
+3. The accuracy is greater than the No Information Rate, which indicates significance.
 
