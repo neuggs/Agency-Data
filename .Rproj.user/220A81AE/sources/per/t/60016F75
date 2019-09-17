@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1568665237158.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2467313831",
+    "id" : "60016F75",
+    "lastKnownWriteTime" : 1568665608,
+    "last_content_update" : 1568665608297,
+    "path" : "~/GitHub/Agency-Data/annual_written_premium.R",
+    "project_path" : "annual_written_premium.R",
+    "properties" : {
+        "cursorPosition" : "33,41",
+        "scrollLine" : "6"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

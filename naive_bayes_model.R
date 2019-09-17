@@ -23,6 +23,9 @@ train_ad <- sample_frac(agency_data_used, 0.7)
 sid <- as.numeric(rownames(train_ad)) # because rownames() returns character
 test_ad <- agency_data_used[-sid,]
 
+#####################################################
+## Naive Bayes for Transaction Type
+#####################################################
 # Build the model and make predictions
 # Conditional probabilities
 nb_model <- naiveBayes(transaction_type~., data=train_ad)
@@ -60,3 +63,7 @@ con_matrix <- confusionMatrix(confusion_matrix)
 overall <- con_matrix[3]
 accuracy <- overall[["overall"]][["Accuracy"]]
 print(percent(accuracy))
+
+##################################################
+## NB for policy term
+##################################################
