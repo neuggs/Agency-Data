@@ -1,0 +1,51 @@
+---
+title: "Naive Bayes Agency Conditional Probabilities"
+author: "Frank Neugebauer"
+date: "9/17/2019"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xlsx)
+library(dplyr)
+library(e1071)
+library(caret)
+library(formattable)
+```
+
+# Introduction
+
+The conditional probabilities are interesting but take up a lot of space in a document (and they're not super readable). Therefore, that part is segemented here and only summarized in the main RMD file.
+
+
+```{r}
+# Read the original data set
+agency_data_orig <- read.xlsx('./AgencyData_clean.xlsx', sheetIndex=1, stringsAsFactors=T)
+# Trim the phat - i.e., data that's irrelevant
+agency_data_used <- agency_data_orig[c(-1, -4)]
+str(agency_data_used)
+
+# Setup train and test data, 70% / 30%
+train_ad <- sample_frac(agency_data_used, 0.7)
+sid <- as.numeric(rownames(train_ad)) # because rownames() returns character
+test_ad <- agency_data_used[-sid,]
+nb_model <- naiveBayes(transaction_type~., data=train_ad)
+```
+
+
+## Conditional Probabilities
+
+```{r}
+nb_model$tables$assigned_agent
+nb_model$tables$lob
+nb_model$tables$master_company
+#nb_model$tables$effective_date # bin this
+nb_model$tables$policy_term
+nb_model$tables$policy_type
+# create one for binned premium
+nb_model$tables$rating_state
+nb_model$tables$status
+```
+

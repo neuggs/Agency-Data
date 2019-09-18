@@ -26,6 +26,7 @@ test_ad <- agency_data_used[-sid,]
 # Build the model and make predictions
 # Conditional probabilities
 nb_model <- naiveBayes(transaction_type~., data=train_ad)
+
 nb_model$tables$account_type
 nb_model$tables$assigned_agent
 nb_model$tables$lob
@@ -36,9 +37,6 @@ nb_model$tables$policy_type
 # create one for binned premium
 nb_model$tables$rating_state
 nb_model$tables$status
-
-foo <- agency_data_used[agency_data_used$annual_premium > 10000]
-summary(agency_data_used$written_premium)
 
 nb_predict <- predict(nb_model, test_ad)
 
@@ -60,3 +58,23 @@ con_matrix <- confusionMatrix(confusion_matrix)
 overall <- con_matrix[3]
 accuracy <- overall[["overall"]][["Accuracy"]]
 print(percent(accuracy))
+
+# single prediction
+new_data = data.frame(
+  'account_type' = 'Personal',
+  'assigned_agent' = 'Walter Doyle',
+  'lob' = 'Auto (Personal)',
+  'master_company' = 'Beaulah Insurance',
+  'effective_date' = as.Date('2014-07-29'),
+  'policy_term' = '12 Months',
+  'policy_type' = 'Personal',
+  'annual_premium' = 1234.33,
+  'written_premium' = 993.23,
+  'rating_state' = 'FL',
+  'status' = 'Active'
+)
+str(new_data)
+
+single_model <- predict(nb_model, newdata=new_data)
+table(single_model)
+
