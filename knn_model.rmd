@@ -1,0 +1,25 @@
+---
+title: "KNN Predictive Model"
+author: "Frank Neugebauer"
+date: "9/25/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xlsx)
+library(caret)
+library(dplyr)
+library(class)
+```
+
+## Introduction
+
+This model simply changes the algo and eventually the target. The idea is to try different approach to see anything beats the `naive bayes` results...and to show other ways of creating the model.
+
+As with the `naive_bayes_model.rmd` file, the data is loaded and the irrelevant features removed. (Refer the `naive_bayes_model.rmd` introduction for more information.) This provides a summary of the data too.
+
+```r {}
+source('load_trim_data.R')
+
+```

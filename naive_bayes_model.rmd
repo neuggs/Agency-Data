@@ -32,25 +32,25 @@ It's clear that predictive modelling with agency has value. The contents of this
 
 This uses a largely unaltered simple Naive Bayes model to set a baseline for subsequent predictive models, which can be created using other algorithms.
 
+## Data Load and Trim
+
+The first step is to load the full data set. The source for this R code is found within `load_trip_data.R`.
+
+The `account_name` is not important in this case, although if the transaction had been more sequential (i.e., from new business through renwal), the name would have matter very much. This is an important consideration for using this with other data. Similarly, the `branch_name` was just the name of the agency and every observation had the same value. If there had been multiple agencies (or branch locations), this feature would have been very important.
 
 ```{r}
 # Read the original data set
-agency_data_orig <- read.xlsx('./data/AgencyData_clean.xlsx', sheetIndex=1, stringsAsFactors=T)
+#agency_data_orig <- read.xlsx('./data/AgencyData_clean.xlsx', sheetIndex=1, stringsAsFactors=T)
+source('load_trim_data.R')
+
 ```
 
-## Data Setup
-
-There are a couple of irrelevant attributes from the original set. The `account_name` is not important in this case, although if the transaction had been more sequential (i.e., from new business through renwal), the name would have matter very much. This is an important consideration for using this with other data. Similarly, the `branch_name` was just the name of the agency and every observation had the same value. If there had been multiple agencies (or branch locations), this feature would have been very important.
+## Split Data
 
 With the irrelevant attributes identified, the following gets rid of those and then show the data structure and separate the `train` and `test` data sets. 
 
 
 ```{r}
-# Trim the phat - i.e., data that's irrelevant
-agency_data_used <- agency_data_orig[c(-1, -4)]
-
-# Show the data structure
-str(agency_data_used)
 
 # Setup train and test data, 70% / 30%
 train_ad <- sample_frac(agency_data_used, 0.7)
