@@ -1,9 +1,14 @@
 import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from xgboost import XGBClassifier
+
+import warnings
+warnings.filterwarnings('ignore')
 
 agency_df = pd.read_excel("../data/AgencyData_clean.xlsx")
 print("Original agency df shape:", agency_df.shape)
@@ -30,6 +35,7 @@ agency_df_used = ohe(agency_df_used, 'master_company')
 agency_df_used = ohe(agency_df_used, 'policy_type')
 agency_df_used = ohe(agency_df_used, 'rating_state')
 agency_df_used = ohe(agency_df_used, 'status')
+agency_df_used = ohe(agency_df_used, 'transaction_type')
 
 # Simple replace for ordinal value
 policy_term_mapper = {"6 Months": 1, "12 Months":2}
@@ -40,53 +46,47 @@ agency_df_used['eff_date_int'] = pd.to_datetime(agency_df_used['effective_date']
 agency_df_used.drop(['effective_date'],axis=1, inplace=True)
 
 # Set features and target
-target = agency_df_used['transaction_type']
-features = agency_df_used.loc[:, agency_df_used.columns != 'transaction_type']
+target = agency_df_used['transaction_type_New Business']
+print(agency_df_used['transaction_type_New Business'])
+features = agency_df_used.loc[:, agency_df_used.columns != 'transaction_type_New Business']
 
 # Create training and test sets
 features_train, features_test, target_train, target_test = train_test_split(
     features, target, test_size=0.25, random_state=1)
 
-# Set up cross validation validator
-criterion = ['gini', 'entropy']
-splitter = ['best', 'random']
-max_features = ['auto', 'sqrt']
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-max_depth.append(None)
-min_samples_split = [2, 5, 10]
-min_samples_leaf = [1, 2, 4]
+random_grid = {'min_child_weight': [1, 5, 1, 0],
+               'gamma': [0.5, 1, 1.5, 2, 5],
+               'subsample': [0.6, 0.8, 1.0],
+               'colsample_bytree': [0.6, 0.8, 1.0],
+               'min_depth': [3, 4, 5]}
 
-random_grid = {'criterion': criterion,
-               'splitter': splitter,
-               'max_features': max_features,
-               'max_depth': max_depth,
-               'min_samples_split': min_samples_split,
-               'min_samples_leaf': min_samples_leaf}
+def xgbcClassifier(the_grid):
+    xgbc_classifier = XGBClassifier(learning_rate=0.02, n_estimator=600, objective='binary:logistic',
+                                    silent=True, nthread=1)
+    folds = 3
+    param_comb = 5
+    skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=1001)
+    random_search = RandomizedSearchCV(xgbc_classifier, param_distributions=the_grid,
+                                       n_iter=param_comb, scoring='roc_auc', n_jobs=4,
+                                       cv=skf.split(features_train, target_train), verbose=3,
+                                       random_state=1001)
+    random_search.fit(features_train, target_train)
 
-def randomSearchCV(the_grid):
-    decision_tree_classifier = DecisionTreeClassifier(random_state=0)
-    rtc_random = RandomizedSearchCV(estimator = decision_tree_classifier,
-                                    param_distributions=the_grid, n_iter=100,
-                                    cv=3, verbose=2, random_state=42, n_jobs=-1)
-    rtc_random.fit(features_train, target_train)
-
-    # Vanilla (bland) DTC with no tuning
-    dt_class_bland = DecisionTreeClassifier(random_state=0)
+    dt_class_bland = XGBClassifier(learning_rate=0.02, n_estimator=600, objective='binary:logistic',
+                                    silent=True, nthread=1)
     dt_class_bland.fit(features_train, target_train)
     y_predict = dt_class_bland.predict(features_test)
     acc = accuracy_score(target_test, y_predict)
     print("Bland accuracy score:", acc)
 
-    return rtc_random
+    return random_search
 
 if __name__ == '__main__':
-    rtc = randomSearchCV(random_grid)
-    print("Best parameters:", rtc.best_params_)
-    print("Best score:", format(rtc.best_score_, '%'))
-    print("Error score:", rtc.error_score)
-    print("Scoring?", rtc.scoring)
-    the_predict = rtc.predict
-    print(the_predict)
+    rtc = xgbcClassifier(random_grid)
+    print("\n Best estimator:", rtc.best_estimator_)
+    print("Best normalized gini scores:", rtc.best_score_)
+    print("Best hyperparameters:", rtc.best_params_)
+
 
 
 
