@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1569931755157.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2404007842",
+    "id" : "3DFDE779",
+    "lastKnownWriteTime" : 1569447344,
+    "last_content_update" : 1569447344,
+    "path" : "~/GitHub/agency_data/knn_model.rmd",
+    "project_path" : "knn_model.rmd",
+    "properties" : {
+        "cursorPosition" : "12,14",
+        "scrollLine" : "3",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
