@@ -1,11 +1,10 @@
 import pandas as pd
 import numpy as np
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 from xgboost import XGBClassifier
+import pickle
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -71,21 +70,18 @@ def xgbcClassifier(the_grid):
                                        cv=skf.split(features_train, target_train), verbose=3,
                                        random_state=1001)
     random_search.fit(features_train, target_train)
-
-    dt_class_bland = XGBClassifier(learning_rate=0.02, n_estimator=600, objective='binary:logistic',
-                                    silent=True, nthread=1)
-    dt_class_bland.fit(features_train, target_train)
-    y_predict = dt_class_bland.predict(features_test)
-    acc = accuracy_score(target_test, y_predict)
-    print("Bland accuracy score:", acc)
-
     return random_search
 
 if __name__ == '__main__':
-    rtc = xgbcClassifier(random_grid)
-    print("\n Best estimator:", rtc.best_estimator_)
-    print("Best normalized gini scores:", rtc.best_score_)
-    print("Best hyperparameters:", rtc.best_params_)
+    random_search_model = xgbcClassifier(random_grid)
+    print("\n Best estimator:", random_search_model.best_estimator_)
+    print("Best normalized gini scores:", random_search_model.best_score_)
+    print("Best hyperparameters:", random_search_model.best_params_)
+
+    # Save the model
+    pkl_filename = "./model/random_search_model.pkl"
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(random_search_model, file)
 
 
 

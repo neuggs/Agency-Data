@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+import pickle
 
 agency_df = pd.read_excel("../data/AgencyData_clean.xlsx")
 print("Original agency df shape:", agency_df.shape)
@@ -47,29 +47,7 @@ features = agency_df_used.loc[:, agency_df_used.columns != 'transaction_type']
 features_train, features_test, target_train, target_test = train_test_split(
     features, target, test_size=0.25, random_state=1)
 
-# Set up cross validation validator
-criterion = ['gini', 'entropy']
-splitter = ['best', 'random']
-max_features = ['auto', 'sqrt']
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-max_depth.append(None)
-min_samples_split = [2, 5, 10]
-min_samples_leaf = [1, 2, 4]
-
-random_grid = {'criterion': criterion,
-               'splitter': splitter,
-               'max_features': max_features,
-               'max_depth': max_depth,
-               'min_samples_split': min_samples_split,
-               'min_samples_leaf': min_samples_leaf}
-
-def randomSearchCV(the_grid):
-    decision_tree_classifier = DecisionTreeClassifier(random_state=0)
-    rtc_random = RandomizedSearchCV(estimator = decision_tree_classifier,
-                                    param_distributions=the_grid, n_iter=100,
-                                    cv=3, verbose=2, random_state=42, n_jobs=-1)
-    rtc_random.fit(features_train, target_train)
-
+def xgb_vanilla():
     # Vanilla (bland) DTC with no tuning
     dt_class_bland = DecisionTreeClassifier(random_state=0)
     dt_class_bland.fit(features_train, target_train)
@@ -77,16 +55,15 @@ def randomSearchCV(the_grid):
     acc = accuracy_score(target_test, y_predict)
     print("Bland accuracy score:", acc)
 
-    return rtc_random
+    return dt_class_bland
 
 if __name__ == '__main__':
-    rtc = randomSearchCV(random_grid)
-    print("Best parameters:", rtc.best_params_)
-    print("Best score:", format(rtc.best_score_, '%'))
-    print("Error score:", rtc.error_score)
-    print("Scoring?", rtc.scoring)
-    the_predict = rtc.predict
-    print(the_predict)
+    rxg_bland_model = xgb_vanilla()
+
+    # Save model model
+    pkl_filename = "./model/random_search_model.pkl"
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(rxg_bland_model, file)
 
 
 
