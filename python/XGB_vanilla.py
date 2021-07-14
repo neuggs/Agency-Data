@@ -39,6 +39,8 @@ agency_df_used.replace(policy_term_mapper, inplace=True)
 agency_df_used['eff_date_int'] = pd.to_datetime(agency_df_used['effective_date']).astype(np.int64)
 agency_df_used.drop(['effective_date'],axis=1, inplace=True)
 
+agency_df_used.to_csv('./data/agency_df_used.csv')
+
 # Set features and target
 target = agency_df_used['transaction_type']
 features = agency_df_used.loc[:, agency_df_used.columns != 'transaction_type']
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     rxg_bland_model = xgb_vanilla()
 
     # Save model model
-    pkl_filename = "./model/random_search_model.pkl"
+    pkl_filename = "./model/XGB_vanilla_model.pkl"
     with open(pkl_filename, 'wb') as file:
         pickle.dump(rxg_bland_model, file)
 

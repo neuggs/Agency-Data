@@ -79,7 +79,7 @@ if __name__ == '__main__':
     print("Best hyperparameters:", random_search_model.best_params_)
 
     # Save the model
-    pkl_filename = "./model/random_search_model.pkl"
+    pkl_filename = "./model/XGB_model.pkl"
     with open(pkl_filename, 'wb') as file:
         pickle.dump(random_search_model, file)
 
